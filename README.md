@@ -1,34 +1,29 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## First fullstack app
+
+Created this project to learn graphql, prisma and apollo combined with nextjs and typescript
 
 ## Getting Started
 
-First, run the development server:
+#### How to run this project on your local machine:
 
 ```bash
+git clone https://github.com/wojtek0123/todo-fullstack-app.git
+cd todo-fullstack-app
+npm install
 npm run dev
-# or
-yarn dev
 ```
+Also you need to create .env file just like .env.example
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## To do:
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+### [ ] implement login
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+### [ ] connect user with tasks in database
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+### [ ] add ability to add tasks
 
-## Learn More
+### [ ] add ability to edit task
 
-To learn more about Next.js, take a look at the following resources:
+### [ ] add ability to delete tasks
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### [ ] improve UI and UX?
