@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 const typeDefs = gql`
   type Task {
     id: String
-    text: String
+    task: String
   }
 
   type Query {
@@ -31,14 +31,17 @@ const resolvers = {
   },
 
   Mutation: {
-    addTask: (args: { text: string }) => {
+    addTask: (_: any, args: { text: string }) => {
       return prisma.task.create({ data: { task: args.text } });
     },
-    editTask: (args: { id: string; text: string }) => {
+    editTask: (_: any, args: { id: string; task: string }) => {
       return prisma.task.update({
         where: { id: args.id },
-        data: { task: args.text },
+        data: { task: args.task },
       });
+    },
+    deleteTask: (_: any, args: { id: string }) => {
+      return prisma.task.delete({ where: { id: args.id } });
     },
   },
 };
