@@ -12,18 +12,13 @@ cd todo-fullstack-app
 npm install
 npm run dev
 ```
+
 Also you need to create .env file just like .env.example
 
 ## To do:
 
 ### [ ] implement login
 
-### [ ] connect user with tasks in database
-
-### [ ] add ability to add tasks
-
-### [ ] add ability to edit task
-
-### [ ] add ability to delete tasks
+### [x] add ability to add, edit, delete tasks
 
 ### [ ] improve UI and UX?

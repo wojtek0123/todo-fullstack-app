@@ -28,8 +28,8 @@ export const DELETE_TASK = gql`
 `;
 
 export const EDIT_TASK = gql`
-  mutation EditTask($id: String, $text: String) {
-    editTask(id: $id, text: $text) {
+  mutation EditTask($id: String, $task: String) {
+    editTask(id: $id, text: $task) {
       id
       task
     }

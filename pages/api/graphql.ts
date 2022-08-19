@@ -34,10 +34,10 @@ const resolvers = {
     addTask: (_: any, args: { text: string }) => {
       return prisma.task.create({ data: { task: args.text } });
     },
-    editTask: (_: any, args: { id: string; task: string }) => {
+    editTask: (_: any, args: { id: string; text: string }) => {
       return prisma.task.update({
         where: { id: args.id },
-        data: { task: args.task },
+        data: { task: args.text },
       });
     },
     deleteTask: (_: any, args: { id: string }) => {
