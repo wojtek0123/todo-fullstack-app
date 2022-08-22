@@ -17,8 +17,10 @@ Also you need to create .env file just like .env.example
 
 ## To do:
 
-### [ ] implement login
+- [x] implement login
 
-### [x] add ability to add, edit, delete tasks
+- [x] add ability to add, edit, delete tasks
 
-### [ ] improve UI and UX?
+- [ ] add styling to login page
+
+- [ ] improve UI and UX?
