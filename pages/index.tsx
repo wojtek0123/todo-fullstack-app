@@ -2,12 +2,10 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 import React, { useState } from 'react';
 import { useMutation, useQuery } from '@apollo/client';
-import {
-  ADD_TASK,
-  DELETE_TASK,
-  GET_TASKS,
-} from '../graphql/queries';
+import { ADD_TASK, DELETE_TASK, GET_TASKS } from '../graphql/queries';
 import Modal from '../components/Modal';
+import { getSession, signOut } from 'next-auth/react';
+import { GetServerSideProps } from 'next';
 
 const Home: NextPage = () => {
   const [enteredTask, setEnteredTask] = useState('');
@@ -19,6 +17,7 @@ const Home: NextPage = () => {
       window.location.reload();
     },
   });
+
   const [deleteTask] = useMutation(DELETE_TASK, {
     onCompleted: () => {
       window.location.reload();
@@ -70,6 +69,7 @@ const Home: NextPage = () => {
             onChange={changeInputHandler}
           />
         </form>
+        <button onClick={() => signOut()}>Logout</button>
       </header>
       <main className='mt-6 mx-2 md:mx-0'>
         {loading && <h2 className='text-center text-3xl'>Loading...</h2>}
@@ -106,6 +106,26 @@ const Home: NextPage = () => {
       <footer></footer>
     </div>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getSession({ req: context.req });
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/login',
+        permament: false,
+      },
+      props: {},
+    };
+  }
+
+  return {
+    props: {
+      session,
+    },
+  };
 };
 
 export default Home;
