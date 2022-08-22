@@ -23,8 +23,6 @@ const Modal: React.FC<{
 
   const editTaskHandler = (event: React.FormEvent) => {
     event.preventDefault();
-    console.log(id);
-    console.log(enteredText);
     editTask({ variables: { id: id, task: enteredText } });
     setEnteredText('');
   };

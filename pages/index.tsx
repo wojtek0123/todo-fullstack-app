@@ -1,17 +1,27 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useMutation, useQuery } from '@apollo/client';
-import { ADD_TASK, DELETE_TASK, GET_TASKS } from '../graphql/queries';
+import {
+  ADD_TASK,
+  DELETE_TASK,
+  GET_TASKS,
+  GET_USER_TASKS,
+} from '../graphql/queries';
 import Modal from '../components/Modal';
-import { getSession, signOut } from 'next-auth/react';
+import { getSession, signOut, useSession } from 'next-auth/react';
 import { GetServerSideProps } from 'next';
 
 const Home: NextPage = () => {
+  const { data: session, status } = useSession();
   const [enteredTask, setEnteredTask] = useState('');
   const [editId, setEditId] = useState('');
   const [showEditModal, setShowEditModal] = useState(false);
-  const { data, error, loading } = useQuery(GET_TASKS);
+  const { data, error, loading } = useQuery(GET_USER_TASKS, {
+    variables: {
+      email: session?.user?.email,
+    },
+  });
   const [addTask] = useMutation(ADD_TASK, {
     onCompleted: () => {
       window.location.reload();
@@ -45,9 +55,17 @@ const Home: NextPage = () => {
 
   const addTaskSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    addTask({ variables: { text: enteredTask } });
+    addTask({ variables: { task: enteredTask, id: data.user.id } });
     setEnteredTask('');
   };
+
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
+
+  if (error) {
+    return <p>Error</p>;
+  }
 
   return (
     <div className='max-w-xl mx-auto w-screen min-h-screen'>
@@ -58,6 +76,14 @@ const Home: NextPage = () => {
       </Head>
 
       <header className='bg-blue-600 pb-8 pt-4 rounded-bl-[2.5rem]'>
+        <div className='flex items-center justify-end'>
+          <button
+            onClick={() => signOut()}
+            className=' border text-white m-4 px-4 py-1 rounded'
+          >
+            Logout
+          </button>
+        </div>
         <h1 className='text-center text-3xl mb-8 text-white'>
           Fullstack ToDo App
         </h1>
@@ -69,13 +95,12 @@ const Home: NextPage = () => {
             onChange={changeInputHandler}
           />
         </form>
-        <button onClick={() => signOut()}>Logout</button>
       </header>
       <main className='mt-6 mx-2 md:mx-0'>
         {loading && <h2 className='text-center text-3xl'>Loading...</h2>}
         {!loading && (
           <ul className='flex flex-col items-start'>
-            {data.tasks.map((task: { id: string; task: string }) => (
+            {data.user.tasks.map((task: { id: string; task: string }) => (
               <li
                 className='text-lg sm:text-xl flex justify-between w-full my-1 items-center'
                 key={task.id}
@@ -111,6 +136,7 @@ const Home: NextPage = () => {
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession({ req: context.req });
 
+  console.log(session);
   if (!session) {
     return {
       redirect: {

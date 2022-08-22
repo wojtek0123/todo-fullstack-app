@@ -1,10 +1,10 @@
 import { gql } from '@apollo/client';
-import { ApolloServer, AuthenticationError } from 'apollo-server-micro';
+import { ApolloServer } from 'apollo-server-micro';
 import { PrismaClient } from '@prisma/client';
 import Cors from 'micro-cors';
-// import { getSession } from 'next-auth/react';
 
 import { Context } from './context';
+import { context } from './context';
 
 const cors = Cors();
 const prisma = new PrismaClient();
@@ -18,17 +18,18 @@ const typeDefs = gql`
 
   type User {
     id: String
-    email: String!
-    tasks: [Task!]
+    email: String
+    tasks: [Task]
   }
 
   type Query {
-    tasks: [Task]
+    user(email: String): User
     users: [User]
+    tasks: [Task]
   }
 
   type Mutation {
-    addTask(text: String, user: String): Task
+    addTask(task: String, id: String): Task
     editTask(id: String, text: String): Task
     deleteTask(id: String): Task
   }
@@ -36,22 +37,35 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    tasks: () => {
-      return prisma.task.findMany();
+    user: (_parent: any, args: { email: string }, context: Context) => {
+      return context.prisma.user.findUnique({
+        where: {
+          email: args.email,
+        },
+        include: {
+          tasks: true,
+        },
+      });
     },
-    users: () => {
-      return prisma.user.findMany();
+    users: (_parent: any, _args: any, context: Context) => {
+      return context.prisma.user.findMany();
+    },
+    tasks: (_parent: any, _args: any, context: Context) => {
+      return context.prisma.task.findMany();
     },
   },
 
   Mutation: {
     addTask: async (
       parent: any,
-      args: { text: string; user: string },
-      context: any
+      args: { task: string; id: string },
+      context: Context
     ) => {
       return context.prisma.task.create({
-        data: { task: args.text, ownerId: args.user },
+        data: {
+          task: args.task,
+          userId: args.id,
+        },
       });
     },
     editTask: (_: any, args: { id: string; text: string }) => {
@@ -71,6 +85,7 @@ const apolloServer = new ApolloServer({
   resolvers,
   csrfPrevention: true,
   cache: 'bounded',
+  context: context,
 });
 const startServer = apolloServer.start();
 
