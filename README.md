@@ -13,7 +13,7 @@ Created this project to learn graphql, prisma and apollo combined with nextjs an
 - Tailwindcss
 - supabase as database
 
-#### How to run this project on your local machine:
+### How to run this project on your local machine:
 
 ```bash
 git clone https://github.com/wojtek0123/todo-fullstack-app.git
