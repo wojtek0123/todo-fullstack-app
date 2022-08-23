@@ -1,6 +1,7 @@
 ## First fullstack app
 
-Created this project to learn graphql, prisma and apollo combined with nextjs and typescript
+I more focued on a logic than a UI or UX.
+Created this project to learn graphql, prisma and apollo combined with nextjs and typescript.
 
 ## Getting Started
 
@@ -21,6 +22,6 @@ Also you need to create .env file just like .env.example
 
 - [x] add ability to add, edit, delete tasks
 
-- [ ] add styling to login page
+- [x] add styling to login page
 
 - [ ] improve UI and UX?
