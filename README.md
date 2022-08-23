@@ -1,9 +1,17 @@
-## First fullstack app
+### First fullstack app
 
 I more focued on a logic than a UI or UX.
 Created this project to learn graphql, prisma and apollo combined with nextjs and typescript.
 
-## Getting Started
+### Used technologies:
+- NextJS
+- GraphQL
+- Apollo
+- Prisma
+- Next-auth
+- TypeScript
+- Tailwindcss
+- supabase as database
 
 #### How to run this project on your local machine:
 
