@@ -24,4 +24,6 @@ Also you need to create .env file just like .env.example
 
 - [x] add styling to login page
 
+- [ ] Add button to mark task as completed and add section for completed tasks
+
 - [ ] improve UI and UX?
