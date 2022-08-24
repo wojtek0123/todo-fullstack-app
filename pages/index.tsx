@@ -1,46 +1,52 @@
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useMutation, useQuery } from '@apollo/client';
 import { ADD_TASK, DELETE_TASK, GET_USER_TASKS } from '../graphql/queries';
 import Modal from '../components/Modal';
 import { getSession, signOut, useSession } from 'next-auth/react';
 import { GetServerSideProps } from 'next';
+import Task from '../components/Task';
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const session = await getSession({ req: context.req });
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/login',
+        permament: false,
+      },
+      props: {},
+    };
+  }
+
+  return {
+    props: {
+      session,
+    },
+  };
+};
 
 const Home: NextPage = () => {
   const { data: session } = useSession();
-  const [enteredTask, setEnteredTask] = useState('');
+  const taskInput = useRef<HTMLInputElement | null>(null);
   const [editId, setEditId] = useState('');
   const [showEditModal, setShowEditModal] = useState(false);
-  const { data, error, loading } = useQuery(GET_USER_TASKS, {
+  const { data, error, loading, refetch } = useQuery(GET_USER_TASKS, {
     variables: {
       email: session?.user?.email,
     },
   });
   const [addTask] = useMutation(ADD_TASK, {
     onCompleted: () => {
-      window.location.reload();
+      refetch();
     },
   });
-
-  const [deleteTask] = useMutation(DELETE_TASK, {
-    onCompleted: () => {
-      window.location.reload();
-    },
-  });
-
-  const deleteTaskHandler = (id: string) => {
-    deleteTask({ variables: { id } });
-  };
 
   const setEditTaskIdHandler = (id: string) => {
     setEditId(id);
     setShowEditModal(true);
-  };
-
-  const changeInputHandler = (event: React.FormEvent<HTMLInputElement>) => {
-    const taskMessage = event.currentTarget.value.trim();
-    setEnteredTask(taskMessage);
   };
 
   const hideModalHandler = () => {
@@ -50,19 +56,22 @@ const Home: NextPage = () => {
 
   const addTaskSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    if (enteredTask.trim().length === 0) {
+    if (
+      !taskInput.current?.value ||
+      taskInput.current?.value.trim().length === 0
+    ) {
       return;
     }
-    addTask({ variables: { task: enteredTask, id: data.user.id } });
-    setEnteredTask('');
+    addTask({ variables: { task: taskInput.current.value, id: data.user.id } });
+    taskInput.current.value = '';
   };
 
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
-
   if (error) {
-    return <p>Error</p>;
+    return (
+      <p className='abosolute h-screen w-screen inset-0 flex items-center justify-center uppercase text-xl'>
+        Something went wrong!
+      </p>
+    );
   }
 
   return (
@@ -83,6 +92,7 @@ const Home: NextPage = () => {
           <p className='truncate mr-1'>Log as {session?.user?.email}</p>
           <div className='w-full flex justify-end mt-1'>
             <button
+              type='button'
               onClick={() => signOut()}
               className='border-2 text-white text-lg px-4 py-1 rounded-lg hover:bg-white hover:text-blue-600 transition'
             >
@@ -98,7 +108,7 @@ const Home: NextPage = () => {
             type='text'
             className='border rounded-lg px-6 py-2 text-lg'
             placeholder='Add task...'
-            onChange={changeInputHandler}
+            ref={taskInput}
           />
           <button
             type='submit'
@@ -113,28 +123,12 @@ const Home: NextPage = () => {
         {!loading && (
           <ul className='flex flex-col items-start'>
             {data.user.tasks.map((task: { id: string; task: string }) => (
-              <li
-                className='text-lg text-white sm:text-xl px-4 py-2 rounded-xl flex justify-between w-full my-1 items-center bg-blue-600'
+              <Task
                 key={task.id}
-              >
-                {task.task}
-                <div>
-                  <button
-                    type='button'
-                    className='border-2 bg-blue-600 py-1 px-2 rounded-xl mr-3 text-white cursor-pointer hover:bg-white hover:text-blue-600 transition-colors'
-                    onClick={() => setEditTaskIdHandler(task.id)}
-                  >
-                    edit
-                  </button>
-                  <button
-                    type='button'
-                    className='border-2 bg-blue-600 py-1 px-2 rounded-xl text-white cursor-pointer hover:bg-white hover:text-blue-600 transition-colors'
-                    onClick={() => deleteTaskHandler(task.id)}
-                  >
-                    delete
-                  </button>
-                </div>
-              </li>
+                task={task}
+                refetch={refetch}
+                setEditTaskIdHandler={setEditTaskIdHandler}
+              />
             ))}
           </ul>
         )}
@@ -142,26 +136,6 @@ const Home: NextPage = () => {
       </main>
     </div>
   );
-};
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getSession({ req: context.req });
-
-  if (!session) {
-    return {
-      redirect: {
-        destination: '/login',
-        permament: false,
-      },
-      props: {},
-    };
-  }
-
-  return {
-    props: {
-      session,
-    },
-  };
 };
 
 export default Home;
